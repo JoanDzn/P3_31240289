@@ -1,5 +1,16 @@
 require('dotenv').config();
 
+// Ensure a JWT secret exists for signing tokens. During tests NODE_ENV === 'test',
+// so provide a default test secret when none is configured to avoid jwt errors.
+if (!process.env.JWT_SECRET) {
+  if (process.env.NODE_ENV === 'test') {
+    process.env.JWT_SECRET = 'test_jwt_secret';
+  } else {
+    process.env.JWT_SECRET = 'dev_jwt_secret';
+    console.warn("JWT_SECRET not set; using default 'dev_jwt_secret' (not for production).");
+  }
+}
+
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
