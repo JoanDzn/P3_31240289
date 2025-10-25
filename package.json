@@ -12,6 +12,8 @@
     "express": "~4.16.1",
     "jest": "^30.2.0",
     "morgan": "~1.9.1",
+    "sequelize": "^6.37.7",
+    "sqlite3": "^5.1.7",
     "supertest": "^7.1.4",
     "swagger": "^0.7.5",
     "swagger-jsdoc": "^6.2.8",
