@@ -1,0 +1,93 @@
+# --- VARIABLES ---
+# Define la URL base de tu servidor
+@baseUrl = http://localhost:3000
+
+# Esta variable guardará el token JWT después del login
+@authToken = {{loginRequest.response.body.data.token}}
+
+
+###
+# ===================================================
+# REQUERIMIENTO 3: AUTENTICACIÓN (Rutas Públicas)
+# ===================================================
+
+### 1. Registrar un nuevo usuario
+# (Ejecuta esta petición SOLO UNA VEZ por cada email)
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "fullName": "Usuario de Prueba (REST Client)",
+  "email": "rest-client@ejemplo.com",
+  "password": "password123"
+}
+
+
+### 2. Iniciar Sesión (Login) y Guardar Token
+# @name loginRequest
+# (Esta petición tiene un @name, lo que permite guardar su respuesta)
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "Kelvino@ejemplo.com",
+  "password": "password555"
+}
+
+
+###
+# ===================================================
+# REQUERIMIENTO 2: CRUD DE USUARIOS (Rutas Protegidas)
+# ===================================================
+
+### 3. Obtener TODOS los usuarios (Protegido)
+# (Usa la variable @authToken que guardamos en el login)
+GET {{baseUrl}}/users
+Authorization: Bearer {{authToken}}
+
+
+### 4. Obtener UN usuario por ID (Protegido)
+# (Reemplaza '1' por el ID del usuario que quieras ver)
+GET {{baseUrl}}/users/8
+Authorization: Bearer {{authToken}}
+
+
+### 5. Crear un usuario (Ruta de Admin Protegida)
+# (Prueba del POST /users, diferente al registro)
+POST {{baseUrl}}/users
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "fullName": "Kelvin Jose",
+  "email": "Kelvino@ejemplo.com",
+  "password": "password555"
+}
+
+
+### 6. Actualizar UN usuario (Protegido)
+# (Actualiza el usuario con ID 1)
+PUT {{baseUrl}}/users/1
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "fullName": "Nombre Actualizado (REST Client)"
+}
+
+
+### 7. Borrar UN usuario (Protegido)
+# (Borra el usuario con ID 2, el que creó el admin)
+DELETE {{baseUrl}}/users/9
+Authorization: Bearer {{authToken}}
+
+
+###
+# ===================================================
+# REQUERIMIENTO 4: PRUEBA DE FALLO (Seguridad)
+# ===================================================
+
+### 8. FALLO - Obtener usuarios SIN token
+# (Esta petición debe fallar con un error 401)
+GET {{baseUrl}}/users
+# (No se envía cabecera de Autorización)

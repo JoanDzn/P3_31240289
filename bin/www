@@ -11,6 +11,10 @@ var http = require('http');
 /**
  * Get port from environment and store in Express.
  */
+// --- INICIO DE MODIFICACIÓN ---
+// 1. Importamos nuestro objeto 'db' de models/index.js
+const db = require('../models');
+// --- FIN DE MODIFICACIÓN ---
 
 var port = normalizePort(process.env.PORT || '3000');
 app.set('port', port);
@@ -32,6 +36,27 @@ server.on('listening', onListening);
 /**
  * Normalize a port into a number, string, or false.
  */
+
+console.log('Intentando sincronizar la base de datos...');
+
+// db.sequelize.sync() se conecta y crea las tablas si no existen
+db.sequelize.sync() // Puedes usar { force: true } para borrar y recrear todo (¡cuidado!)
+  .then(() => {
+    console.log('✅ Base de datos sincronizada correctamente.');
+    
+    /**
+     * Listen on provided port, on all network interfaces.
+     * (Movemos estas líneas aquí adentro del .then())
+     */
+
+
+  })
+  .catch((err) => {
+    // Si la conexión falla, detenemos la app
+    console.error('❌ Error al sincronizar la base de datos:', err);
+    process.exit(1); // Cierra la aplicación con un código de error
+  });
+// --- FIN DE MODIFICACIÓN ---
 
 function normalizePort(val) {
   var port = parseInt(val, 10);
