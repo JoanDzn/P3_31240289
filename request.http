@@ -17,9 +17,9 @@ POST {{baseUrl}}/auth/register
 Content-Type: application/json
 
 {
-  "fullName": "Usuario de Prueba (REST Client)",
-  "email": "rest-client@ejemplo.com",
-  "password": "password123"
+  "fullName": "Joan",
+  "email": "joan@gmail.com",
+  "password": "31240289"
 }
 
 
@@ -30,8 +30,8 @@ POST {{baseUrl}}/auth/login
 Content-Type: application/json
 
 {
-  "email": "Kelvino@ejemplo.com",
-  "password": "password555"
+  "email": "joan@gmail.com",
+  "password": "31240289"
 }
 
 
@@ -91,3 +91,162 @@ Authorization: Bearer {{authToken}}
 # (Esta petición debe fallar con un error 401)
 GET {{baseUrl}}/users
 # (No se envía cabecera de Autorización)
+
+
+# =================================================== 
+# =================================================== 
+# =================================================== 
+# =================================================== 
+# ===================== TASK 2 ====================== 
+# =================================================== 
+# =================================================== 
+# =================================================== 
+# =================================================== 
+
+
+
+### 1. Registrar un Usuario (Si no tienes uno creado)
+POST http://localhost:3000/auth/register
+Content-Type: application/json
+
+{
+  "fullName": "Joan",
+  "email": "joan@gmail.com",
+  "password": "31240289"
+}
+
+### 2. Iniciar Sesión (Login)
+POST http://localhost:3000/auth/login
+Content-Type: application/json
+
+{
+  "email": "joan@gmail.com",
+  "password": "31240289"
+}
+
+### 3. Crear una Categoría (Ruta Protegida)
+# ⚠️ IMPORTANTE: Copia el token que te dio el login y pégalo después de "Bearer"
+POST http://localhost:3000/categories
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoxfSwiaWF0IjoxNzYzMTg0MzE5LCJleHAiOjE3NjMxODc5MTl9.rsR_qKXxqD7Hv1vTwkV3aKBMhpOFnWRkHdB5zdPBrHk
+
+{
+  "name": "Motor",
+  "description": "Vielas, pistones, cilindros"
+}
+
+### 4. Ver todas las Categorías
+GET http://localhost:3000/categories
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoxfSwiaWF0IjoxNzYzMTg0MzE5LCJleHAiOjE3NjMxODc5MTl9.rsR_qKXxqD7Hv1vTwkV3aKBMhpOFnWRkHdB5zdPBrHk
+
+### 5. Eliminar Categorías
+DELETE http://localhost:3000/categories/2
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoxfSwiaWF0IjoxNzYzMTg0MzE5LCJleHAiOjE3NjMxODc5MTl9.rsR_qKXxqD7Hv1vTwkV3aKBMhpOFnWRkHdB5zdPBrHk
+
+### 6. Actualizar Categorías
+PUT http://localhost:3000/categories/1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoxfSwiaWF0IjoxNzYzMTg0MzE5LCJleHAiOjE3NjMxODc5MTl9.rsR_qKXxqD7Hv1vTwkV3aKBMhpOFnWRkHdB5zdPBrHk
+
+{
+  "description": "Motores, pistones, cilindros, vielas"
+}
+
+
+# =================================================== 
+# =================================================== 
+# =================================================== 
+# =================================================== 
+# ===================== TASK 2 ====================== 
+# ===================--- TAGS ---==================== 
+# =================================================== 
+# =================================================== 
+# =================================================== 
+# =================================================== 
+
+
+
+
+
+### Crear un TAG primero (si no tienes)
+POST http://localhost:3000/tags
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoxfSwiaWF0IjoxNzYzMTg0MzE5LCJleHAiOjE3NjMxODc5MTl9.rsR_qKXxqD7Hv1vTwkV3aKBMhpOFnWRkHdB5zdPBrHk
+
+{
+    "name": "Oferta"
+}
+
+
+
+### Crear un PRODUCTO (Repuesto)
+POST http://localhost:3000/products
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoxfSwiaWF0IjoxNzYzMTg0MzE5LCJleHAiOjE3NjMxODc5MTl9.rsR_qKXxqD7Hv1vTwkV3aKBMhpOFnWRkHdB5zdPBrHk
+
+{
+  "name": "Kit de Tiempo Bera SBR 2024",
+  "description": "Kit completo",
+  "price": 15.99,
+  "stock": 50,
+  "brand": "Bera Genuine",
+  "categoryId": 1,
+  "tags": [1],
+  "compatibility": "SBR 2024",
+  "sku": "KT-BERA-2024"
+}
+
+### Actualizar un Producto 
+PUT http://localhost:3000/products/1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoxfSwiaWF0IjoxNzYzMTg0MzE5LCJleHAiOjE3NjMxODc5MTl9.rsR_qKXxqD7Hv1vTwkV3aKBMhpOFnWRkHdB5zdPBrHk
+
+{
+  "price": 17.99,
+  "stock": 45
+}
+
+### Obtener un Producto por ID
+GET http://localhost:3000/products/1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoxfSwiaWF0IjoxNzYzMTg0MzE5LCJleHAiOjE3NjMxODc5MTl9.rsR_qKXxqD7Hv1vTwkV3aKBMhpOFnWRkHdB5zdPBrHk
+
+### Eliminar un Producto
+DELETE http://localhost:3000/products/1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoxfSwiaWF0IjoxNzYzMTg0MzE5LCJleHAiOjE3NjMxODc5MTl9.rsR_qKXxqD7Hv1vTwkV3aKBMhpOFnWRkHdB5zdPBrHk
+
+
+
+
+# =================================================== 
+# =================================================== 
+# =================================================== 
+# =================================================== 
+# ===================== TASK 2 ====================== 
+# ===================-- SEARCH --==================== 
+# =================================================== 
+# =================================================== 
+# =================================================== 
+# =================================================== 
+
+
+
+# Ponemos un slug FALSO ("repuesto-viejo") para forzar la redirección.
+
+
+### Búsqueda Pública (Debería traer tus productos)
+GET http://localhost:3000/products?search=Bera
+
+### Prueba de Self-Healing (Redirección)
+GET http://localhost:3000/p/1-repuesto-viejo
+
+
+### Búsqueda Avanzada COMPLETA (Pública)
+
+### Prueba buscar por TAGS (ej: ID 1 y 2) Y Marca
+GET http://localhost:3000/products?tags=1,2&brand=Bera Genuine
+
+### Prueba buscar por Compatibilidad (SBR) Y Precio
+GET http://localhost:3000/products?compatibility=SBR&price_max=20
+
+### Prueba buscar por SKU (si lo añadiste)
+GET http://localhost:3000/products?sku=KT-BERA-2024

@@ -28,8 +28,8 @@ router.post(
 
     body('password')
       .trim()
-      .isLength({ min: 6 })
-      .withMessage('La contraseña debe tener al menos 6 caracteres.')
+      .isLength({ min: 3 })
+      .withMessage('La contraseña debe tener al menos 3 caracteres.')
   ],
   async (req, res) => {
     // --- Manejo de Errores de Validación ---

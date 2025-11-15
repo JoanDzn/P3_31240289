@@ -1,55 +1,39 @@
 'use strict';
 
-const fs = require('fs');
-const path = require('path');
 const { Sequelize, DataTypes } = require('sequelize');
-const process = require('process');
-const basename = path.basename(__filename); // El nombre de este archivo (index.js)
-
-// Este objeto 'db' guardará todo: la conexión y los modelos
-const db = {};
 
 // --- 1. CONFIGURACIÓN DE LA CONEXIÓN ---
-// Le decimos a Sequelize que usaremos SQLite y que 
-// la base de datos será un archivo llamado 'db.sqlite' 
-// en la raíz del proyecto.
 const sequelize = new Sequelize({
   dialect: 'sqlite',
-  storage: 'db.sqlite', // Nombre del archivo de la base de datos
-  // Opcional: Descomenta la siguiente línea si no quieres
-  // ver los comandos SQL en la consola cada vez que se ejecutan
-  // logging: false 
+  storage: 'db.sqlite',
+  logging: false 
 });
 
+// --- 2. IMPORTACIÓN MANUAL DE MODELOS ---
+// Importamos cada archivo explícitamente para evitar errores de nombres
+const User = require('./user')(sequelize, DataTypes);
+const Category = require('./category.model')(sequelize, DataTypes);
+const Tag = require('./tag.model')(sequelize, DataTypes);
+const Product = require('./product.model')(sequelize, DataTypes);
 
-// --- 2. CARGA DINÁMICA DE MODELOS ---
-// Este código es para "descubrir" automáticamente
-// todos los otros archivos .js en esta misma carpeta (models)
-// y cargarlos como modelos de Sequelize.
-fs
-  .readdirSync(__dirname) // Lee todos los archivos del directorio actual
-  .filter(file => {
-    // Filtra los archivos:
-    return (
-      file.indexOf('.') !== 0 &&         // Que no empiecen con '.' (ocultos)
-      file !== basename &&               // Que no sea este mismo archivo (index.js)
-      file.slice(-3) === '.js' &&      // Que terminen en .js
-      file.indexOf('.test.js') === -1  // Que no sean archivos de prueba
-    );
-  })
-  .forEach(file => {
-    // Por cada archivo de modelo encontrado...
-    // lo importamos y lo "inicializamos"
-    const model = require(path.join(__dirname, file))(sequelize, DataTypes);
-    // Y lo guardamos en nuestro objeto 'db'
-    db[model.name] = model;
-  });
+// --- 3. DEFINICIÓN DE RELACIONES (ASOCIACIONES) ---
+// Esta es la parte que faltaba y que soluciona el error "setTags is not a function"
 
-// --- 3. EXPORTACIÓN ---
-// Adjuntamos la instancia de sequelize (la conexión)
-db.sequelize = sequelize;
-// Adjuntamos el constructor base de Sequelize
-db.Sequelize = Sequelize;
+// Relación: Una Categoría tiene muchos Productos
+Category.hasMany(Product, { foreignKey: 'categoryId', as: 'products' });
+Product.belongsTo(Category, { foreignKey: 'categoryId', as: 'category' });
 
-// Exportamos el objeto 'db' para usarlo en el resto de la app
-module.exports = db;
+// Relación: Productos y Tags (Muchos a Muchos)
+// Al definir esto, Sequelize crea automáticamente los métodos .setTags(), .addTags(), etc.
+Product.belongsToMany(Tag, { through: 'ProductTags', as: 'tags' });
+Tag.belongsToMany(Product, { through: 'ProductTags', as: 'products' });
+
+// --- 4. EXPORTACIÓN ---
+module.exports = {
+  sequelize,
+  Sequelize,
+  User,
+  Category,
+  Tag,
+  Product
+};

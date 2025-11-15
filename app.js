@@ -10,7 +10,10 @@ if (!process.env.JWT_SECRET) {
     console.warn("JWT_SECRET not set; using default 'dev_jwt_secret' (not for production).");
   }
 }
-
+var publicRouter = require('./routes/public');
+var productsRouter = require('./routes/products');
+var categoriesRouter = require('./routes/categories');
+var tagsRouter = require('./routes/tags');
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
@@ -18,13 +21,22 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var swaggerJSDoc = require('swagger-jsdoc');
 var swaggerUi = require('swagger-ui-express');
-
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var authRouter = require('./routes/auth');
-
+var { sequelize } = require('./models');
 var app = express();
 
+// Sincronizar modelos con la DB
+if (process.env.NODE_ENV !== 'test') {
+  sequelize.sync({ alter: true })
+    .then(() => {
+      console.log('✅ Tablas sincronizadas (Users, Products, Categories, Tags)');
+    })
+    .catch((err) => {
+      console.error('❌ Error de sincronización:', err);
+    });
+}
 // ... (configuración de vistas, 'view engine setup')
 
 app.use(logger('dev'));
@@ -34,9 +46,13 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // --- SECCIÓN DE RUTAS ---
+app.use('/', publicRouter);
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/auth', authRouter);
+app.use('/categories', categoriesRouter);
+app.use('/tags', tagsRouter);
+app.use('/products', productsRouter);
 
 // Swagger setup
 var swaggerDefinition = {
@@ -110,13 +126,23 @@ var swaggerOptions = {
   apis: [
     path.join(__dirname, 'app.js'),
     path.join(__dirname, 'routes', 'auth.js'),
-    path.join(__dirname, 'routes', 'users.js')
+    path.join(__dirname, 'routes', 'users.js'),
+    path.join(__dirname, 'routes', 'categories.js'),
+    path.join(__dirname, 'routes', 'tags.js'),
+    path.join(__dirname, 'routes', 'products.js'),
+    path.join(__dirname, 'routes', 'public.js')
   ]
 };
 
 /**
  * @openapi
- * /components:
+ * components:
+ *   securitySchemes:
+ *     bearerAuth:
+ *       type: http
+ *       scheme: bearer
+ *       bearerFormat: JWT
+ *       description: "Token de autenticación JWT (Bearer). Introduce 'Bearer' [espacio] y luego tu token."
  *   schemas:
  *     User:
  *       type: object
@@ -143,6 +169,10 @@ var swaggerOptions = {
  *           description: Fecha de última actualización.
  *     UserRegister:
  *       type: object
+ *       required:
+ *         - fullName
+ *         - email
+ *         - password
  *       properties:
  *         fullName:
  *           type: string
@@ -159,6 +189,9 @@ var swaggerOptions = {
  *           example: claveSegura123
  *     UserLogin:
  *       type: object
+ *       required:
+ *         - email
+ *         - password
  *       properties:
  *         email:
  *           type: string
@@ -183,20 +216,110 @@ var swaggerOptions = {
  *         data:
  *           type: object
  *           description: Objeto o array con los errores de validación.
- *   securitySchemes:
- *     bearerAuth:
- *       type: http
- *       scheme: bearer
- *       bearerFormat: JWT
- *       description: "Token de autenticación JWT (Bearer). Introduce 'Bearer' [espacio] y luego tu token."
+ *     Category:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: integer
+ *           example: 1
+ *         name:
+ *           type: string
+ *           example: "Frenos"
+ *         description:
+ *           type: string
+ *           example: "Sistemas de frenado"
+ *     Tag:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: integer
+ *           example: 1
+ *         name:
+ *           type: string
+ *           example: "Oferta"
+ *     Product:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: integer
+ *           example: 1
+ *         name:
+ *           type: string
+ *           example: "Kit de Tiempo Bera SBR"
+ *         slug:
+ *           type: string
+ *           example: "kit-de-tiempo-bera-sbr"
+ *         description:
+ *           type: string
+ *           example: "Kit completo con cadena"
+ *         price:
+ *           type: number
+ *           example: 15.99
+ *         stock:
+ *           type: integer
+ *           example: 50
+ *         brand:
+ *           type: string
+ *           example: "Bera Genuine"
+ *         compatibility:
+ *           type: string
+ *           example: "SBR 2024"
+ *         category:
+ *           $ref: '#/components/schemas/Category'
+ *         tags:
+ *           type: array
+ *           items:
+ *             $ref: '#/components/schemas/Tag'
+ *     ProductInput:
+ *       type: object
+ *       required:
+ *         - name
+ *         - price
+ *         - brand
+ *         - categoryId
+ *       properties:
+ *         name:
+ *           type: string
+ *           example: "Kit de Tiempo Bera SBR"
+ *         description:
+ *           type: string
+ *           example: "Kit completo"
+ *         price:
+ *           type: number
+ *           example: 15.99
+ *         stock:
+ *           type: integer
+ *           example: 50
+ *         brand:
+ *           type: string
+ *           example: "Bera Genuine"
+ *         compatibility:
+ *           type: string
+ *           example: "SBR 2024"
+ *         categoryId:
+ *           type: integer
+ *           example: 1
+ *         tags:
+ *           type: array
+ *           items:
+ *             type: integer
+ *           example: [1, 2]
  * tags:
  *   - name: Información
  *     description: Endpoints públicos de información del servidor.
  *   - name: Autenticación
  *     description: Endpoints para registro e inicio de sesión.
  *   - name: Usuarios (Gestión)
- *     description: (Protegido) CRUD para la gestión de usuarios. Requiere token JWT.
+ *     description: (Protegido) CRUD para la gestión de usuarios.
+ *   - name: Categorías
+ *     description: (Protegido) Gestión de categorías.
+ *   - name: Admin - Productos
+ *     description: (Protegido) Gestión de inventario.
+ *   - name: Público - Productos
+ *     description: (Público) Buscador y catálogo para clientes.
  */
+
+
 
 var swaggerSpec = swaggerJSDoc(swaggerOptions);
 
