@@ -10,6 +10,7 @@ if (!process.env.JWT_SECRET) {
     console.warn("JWT_SECRET not set; using default 'dev_jwt_secret' (not for production).");
   }
 }
+var ordersRouter = require('./src/routes/orders');
 var publicRouter = require('./routes/public');
 var productsRouter = require('./routes/products');
 var categoriesRouter = require('./routes/categories');
@@ -53,7 +54,7 @@ app.use('/auth', authRouter);
 app.use('/categories', categoriesRouter);
 app.use('/tags', tagsRouter);
 app.use('/products', productsRouter);
-
+app.use('/orders', ordersRouter);
 // Swagger setup
 var swaggerDefinition = {
   openapi: '3.0.0',
@@ -130,7 +131,8 @@ var swaggerOptions = {
     path.join(__dirname, 'routes', 'categories.js'),
     path.join(__dirname, 'routes', 'tags.js'),
     path.join(__dirname, 'routes', 'products.js'),
-    path.join(__dirname, 'routes', 'public.js')
+    path.join(__dirname, 'routes', 'public.js'),
+    path.join(__dirname, 'src', 'routes', '*.js')
   ]
 };
 
@@ -304,6 +306,52 @@ var swaggerOptions = {
  *           items:
  *             type: integer
  *           example: [1, 2]
+ *     CheckoutInput:
+ *       type: object
+ *       required:
+ *         - items
+ *         - paymentMethod
+ *         - paymentDetails
+ *       properties:
+ *         items:
+ *           type: array
+ *           items:
+ *             type: object
+ *             properties:
+ *               id:
+ *                 type: integer
+ *               quantity:
+ *                 type: integer
+ *         paymentMethod:
+ *           type: string
+ *           example: "CreditCard"
+ *         paymentDetails:
+ *           type: object
+ *           properties:
+ *             cardNumber:
+ *               type: string
+ *             cvv:
+ *               type: string
+ *             expMonth:
+ *               type: string
+ *             expYear:
+ *               type: string
+ *             cardHolder:
+ *               type: string
+ *             currency:
+ *               type: string
+ *       example:
+ *         items:
+ *           - id: 1
+ *             quantity: 2
+ *         paymentMethod: "CreditCard"
+ *         paymentDetails:
+ *           cardNumber: "4111111111111111"
+ *           cvv: "123"
+ *           expMonth: "12"
+ *           expYear: "2030"
+ *           cardHolder: "APPROVED"
+ *           currency: "USD"
  * tags:
  *   - name: Información
  *     description: Endpoints públicos de información del servidor.
@@ -675,5 +723,11 @@ app.use(function(err, req, res, next) {
     message: err.message
   });
 });
+
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`Servidor corriendo en puerto ${PORT}`);
+  });
+}
 
 module.exports = app;

@@ -1,0 +1,1259 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Check",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/about": {
+      "get": {
+        "tags": [
+          "Información"
+        ],
+        "summary": "Información del estudiante (autor del codigo)",
+        "description": "Devuelve información básica del autor (nombre, cédula, sección).",
+        "responses": {
+          "200": {
+            "description": "Objeto JSON con los datos del autor",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "string",
+                      "example": "success"
+                    },
+                    "datos": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string",
+                          "example": "Joan Jose Garcia Valenzuela"
+                        },
+                        "cedula": {
+                          "type": "string",
+                          "example": "31.240.289"
+                        },
+                        "seccion": {
+                          "type": "string",
+                          "example": "2"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ping": {
+      "get": {
+        "tags": [
+          "Información"
+        ],
+        "summary": "Ping",
+        "description": "Endpoint para comprobar que el servidor está activo. Responde 200 sin contenido.",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/auth/register": {
+      "post": {
+        "tags": [
+          "Autenticación"
+        ],
+        "summary": "Registra un nuevo usuario",
+        "description": "Endpoint público para crear una nueva cuenta de usuario.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserRegister"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Usuario creado exitosamente.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "success"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "user": {
+                          "$ref": "#/components/schemas/User"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error de validación (ej. email duplicado).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JSendFail"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "tags": [
+          "Autenticación"
+        ],
+        "summary": "Inicia sesión de un usuario",
+        "description": "Autentica a un usuario con email y contraseña, y devuelve un token JWT.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserLogin"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login exitoso, devuelve token.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "success"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/AuthToken"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Credenciales inválidas.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JSendFail"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users": {
+      "get": {
+        "tags": [
+          "Usuarios (Gestión)"
+        ],
+        "summary": "Obtiene la lista de todos los usuarios",
+        "description": "Ruta protegida. Devuelve un array de todos los usuarios en la BD.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de usuarios obtenida.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "success"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "users": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/User"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No autorizado (token no válido o no provisto)."
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Usuarios (Gestión)"
+        ],
+        "summary": "Crea un nuevo usuario (Ruta de Admin)",
+        "description": "Ruta protegida. Permite a un admin crear un nuevo usuario (diferente de /auth/register).",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserRegister"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Usuario creado exitosamente.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "success"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "user": {
+                          "$ref": "#/components/schemas/User"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error de validación."
+          },
+          "401": {
+            "description": "No autorizado."
+          }
+        }
+      }
+    },
+    "/users/{id}": {
+      "get": {
+        "tags": [
+          "Usuarios (Gestión)"
+        ],
+        "summary": "Obtiene un usuario por su ID",
+        "description": "Ruta protegida. Devuelve un solo usuario.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "El ID numérico del usuario a buscar."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Usuario encontrado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "success"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "user": {
+                          "$ref": "#/components/schemas/User"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No autorizado."
+          },
+          "404": {
+            "description": "Usuario no encontrado."
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Usuarios (Gestión)"
+        ],
+        "summary": "Actualiza un usuario",
+        "description": "Ruta protegida. Actualiza el fullName o email de un usuario.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "El ID numérico del usuario a actualizar."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "fullName": {
+                    "type": "string",
+                    "example": "Joan Jose (Actualizado)"
+                  },
+                  "email": {
+                    "type": "string",
+                    "example": "joan.nuevo@ejemplo.com"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Usuario actualizado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "success"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "user": {
+                          "$ref": "#/components/schemas/User"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No autorizado."
+          },
+          "404": {
+            "description": "Usuario no encontrado."
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Usuarios (Gestión)"
+        ],
+        "summary": "Elimina un usuario",
+        "description": "Ruta protegida. Elimina un usuario de la base de datos.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "El ID numérico del usuario a eliminar."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Usuario eliminado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "success"
+                    },
+                    "data": {
+                      "nullable": true,
+                      "example": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No autorizado."
+          },
+          "404": {
+            "description": "Usuario no encontrado."
+          }
+        }
+      }
+    },
+    "/categories": {
+      "get": {
+        "tags": [
+          "Categorías"
+        ],
+        "summary": "Listar categorías",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista obtenida"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Categorías"
+        ],
+        "summary": "Crear categoría",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Creado"
+          }
+        }
+      }
+    },
+    "/products": {
+      "post": {
+        "tags": [
+          "Admin - Productos"
+        ],
+        "summary": "Crear Producto",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProductInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Producto creado"
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Público - Productos"
+        ],
+        "summary": "Búsqueda Avanzada de Productos",
+        "description": "Filtra, busca y pagina productos. No requiere token.",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "search",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Busca por nombre o descripción"
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "in": "query",
+            "name": "price_min",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "price_max",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "brand",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "tags",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Lista de IDs separados por coma (ej. 1,2)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultados de la búsqueda",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "products": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/Product"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/products/{id}": {
+      "put": {
+        "tags": [
+          "Admin - Productos"
+        ],
+        "summary": "Actualizar Producto",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProductInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Actualizado"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Admin - Productos"
+        ],
+        "summary": "Eliminar Producto",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Eliminado"
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Admin - Productos"
+        ],
+        "summary": "Ver detalle (Admin)",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Producto encontrado"
+          }
+        }
+      }
+    },
+    "/p/{id}-{slug}": {
+      "get": {
+        "tags": [
+          "Público - Productos"
+        ],
+        "summary": "Detalle de Producto (Self-Healing)",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "in": "path",
+            "name": "slug",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Detalle del producto"
+          },
+          "301": {
+            "description": "Redirección si el slug es incorrecto"
+          }
+        }
+      }
+    },
+    "/orders": {
+      "post": {
+        "summary": "Crear una nueva orden y procesar el pago",
+        "tags": [
+          "Orders"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "description": "**OPERACIÓN TRANSACCIONAL CRÍTICA:** Este endpoint ejecuta una transacción ACID completa. 1. Verifica Stock. 2. Procesa el pago en la API externa. 3. Descuenta el stock y crea la orden. Si el pago falla o no hay stock, se realiza un **ROLLBACK** total y no se guardan datos.\n",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CheckoutInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Orden creada y pagada exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "success"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "order": {
+                          "$ref": "#/components/schemas/Order"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error de validación, Stock insuficiente o Pago Rechazado (Rollback ejecutado)"
+          },
+          "401": {
+            "description": "No autorizado (Token faltante o inválido)"
+          }
+        }
+      },
+      "get": {
+        "summary": "Obtener historial de órdenes del usuario",
+        "tags": [
+          "Orders"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            },
+            "description": "Número de página"
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "integer",
+              "default": 10
+            },
+            "description": "Cantidad de items por página"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista paginada de órdenes"
+          }
+        }
+      }
+    },
+    "/orders/{id}": {
+      "get": {
+        "summary": "Obtener detalle de una orden específica",
+        "tags": [
+          "Orders"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "ID de la orden"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Detalle completo de la orden con sus items",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Order"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Orden no encontrada o no pertenece al usuario"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "Token de autenticación JWT (Bearer). Introduce 'Bearer' [espacio] y luego tu token."
+      }
+    },
+    "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "El ID autoincremental del usuario.",
+            "example": 1
+          },
+          "fullName": {
+            "type": "string",
+            "description": "El nombre completo del usuario.",
+            "example": "Joan Jose Garcia"
+          },
+          "email": {
+            "type": "string",
+            "description": "El email único del usuario.",
+            "example": "joan@ejemplo.com"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Fecha de creación."
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Fecha de última actualización."
+          }
+        }
+      },
+      "UserRegister": {
+        "type": "object",
+        "required": [
+          "fullName",
+          "email",
+          "password"
+        ],
+        "properties": {
+          "fullName": {
+            "type": "string",
+            "description": "El nombre completo del usuario.",
+            "example": "Joan Jose Garcia"
+          },
+          "email": {
+            "type": "string",
+            "description": "El email único del usuario.",
+            "example": "joan@ejemplo.com"
+          },
+          "password": {
+            "type": "string",
+            "format": "password",
+            "description": "Contraseña (min 6 caracteres).",
+            "example": "claveSegura123"
+          }
+        }
+      },
+      "UserLogin": {
+        "type": "object",
+        "required": [
+          "email",
+          "password"
+        ],
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "joan@ejemplo.com"
+          },
+          "password": {
+            "type": "string",
+            "format": "password",
+            "example": "claveSegura123"
+          }
+        }
+      },
+      "AuthToken": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "description": "El token JWT para autenticación.",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+          }
+        }
+      },
+      "JSendFail": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "fail"
+          },
+          "data": {
+            "type": "object",
+            "description": "Objeto o array con los errores de validación."
+          }
+        }
+      },
+      "Category": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 1
+          },
+          "name": {
+            "type": "string",
+            "example": "Frenos"
+          },
+          "description": {
+            "type": "string",
+            "example": "Sistemas de frenado"
+          }
+        }
+      },
+      "Tag": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 1
+          },
+          "name": {
+            "type": "string",
+            "example": "Oferta"
+          }
+        }
+      },
+      "Product": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 1
+          },
+          "name": {
+            "type": "string",
+            "example": "Kit de Tiempo Bera SBR"
+          },
+          "slug": {
+            "type": "string",
+            "example": "kit-de-tiempo-bera-sbr"
+          },
+          "description": {
+            "type": "string",
+            "example": "Kit completo con cadena"
+          },
+          "price": {
+            "type": "number",
+            "example": 15.99
+          },
+          "stock": {
+            "type": "integer",
+            "example": 50
+          },
+          "brand": {
+            "type": "string",
+            "example": "Bera Genuine"
+          },
+          "compatibility": {
+            "type": "string",
+            "example": "SBR 2024"
+          },
+          "category": {
+            "$ref": "#/components/schemas/Category"
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Tag"
+            }
+          }
+        }
+      },
+      "ProductInput": {
+        "type": "object",
+        "required": [
+          "name",
+          "price",
+          "brand",
+          "categoryId"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Kit de Tiempo Bera SBR"
+          },
+          "description": {
+            "type": "string",
+            "example": "Kit completo"
+          },
+          "price": {
+            "type": "number",
+            "example": 15.99
+          },
+          "stock": {
+            "type": "integer",
+            "example": 50
+          },
+          "brand": {
+            "type": "string",
+            "example": "Bera Genuine"
+          },
+          "compatibility": {
+            "type": "string",
+            "example": "SBR 2024"
+          },
+          "categoryId": {
+            "type": "integer",
+            "example": 1
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            },
+            "example": [
+              1,
+              2
+            ]
+          }
+        }
+      },
+      "CheckoutInput": {
+        "type": "object",
+        "required": [
+          "items",
+          "paymentMethod",
+          "paymentDetails"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer"
+                },
+                "quantity": {
+                  "type": "integer"
+                }
+              }
+            },
+            "description": "Lista de productos a comprar"
+          },
+          "paymentMethod": {
+            "type": "string",
+            "example": "CreditCard",
+            "description": "Estrategia de pago a utilizar"
+          },
+          "paymentDetails": {
+            "type": "object",
+            "properties": {
+              "cardNumber": {
+                "type": "string"
+              },
+              "cvv": {
+                "type": "string"
+              },
+              "expMonth": {
+                "type": "string"
+              },
+              "expYear": {
+                "type": "string"
+              },
+              "cardHolder": {
+                "type": "string",
+                "description": "Enviar \"APPROVED\" para éxito o \"REJECTED\" para probar Rollback"
+              },
+              "currency": {
+                "type": "string"
+              }
+            },
+            "description": "Datos sensibles para procesar el pago (No se guardan, solo se procesan)"
+          }
+        },
+        "example": {
+          "items": [
+            {
+              "id": 1,
+              "quantity": 2
+            }
+          ],
+          "paymentMethod": "CreditCard",
+          "paymentDetails": {
+            "cardNumber": "4111111111111111",
+            "cvv": "123",
+            "expMonth": "12",
+            "expYear": "2030",
+            "cardHolder": "APPROVED",
+            "currency": "USD"
+          }
+        }
+      },
+      "OrderItem": {
+        "type": "object",
+        "properties": {
+          "productId": {
+            "type": "integer",
+            "description": "ID del producto comprado"
+          },
+          "quantity": {
+            "type": "integer",
+            "description": "Cantidad comprada"
+          },
+          "unitPrice": {
+            "type": "number",
+            "format": "float",
+            "description": "Precio unitario al momento de la compra"
+          }
+        }
+      },
+      "Order": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "totalAmount": {
+            "type": "number",
+            "description": "Monto total de la orden"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "PENDING",
+              "COMPLETED",
+              "CANCELLED"
+            ]
+          },
+          "paymentMethod": {
+            "type": "string",
+            "description": "Método utilizado (CreditCard, PayPal, etc.)"
+          },
+          "transactionReference": {
+            "type": "string",
+            "description": "ID de la transacción devuelto por la pasarela de pago"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OrderItem"
+            }
+          }
+        }
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Información",
+      "description": "Endpoints públicos de información del servidor."
+    },
+    {
+      "name": "Autenticación",
+      "description": "Endpoints para registro e inicio de sesión."
+    },
+    {
+      "name": "Usuarios (Gestión)",
+      "description": "(Protegido) CRUD para la gestión de usuarios."
+    },
+    {
+      "name": "Categorías",
+      "description": "(Protegido) Gestión de categorías."
+    },
+    {
+      "name": "Admin - Productos",
+      "description": "(Protegido) Gestión de inventario."
+    },
+    {
+      "name": "Público - Productos",
+      "description": "(Público) Buscador y catálogo para clientes."
+    },
+    {
+      "name": "Orders",
+      "description": "Gestión de Órdenes y Proceso de Checkout (Transaccional)"
+    }
+  ]
+}
