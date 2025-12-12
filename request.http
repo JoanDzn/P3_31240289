@@ -128,7 +128,7 @@ Content-Type: application/json
 # ⚠️ IMPORTANTE: Copia el token que te dio el login y pégalo después de "Bearer"
 POST http://localhost:3000/categories
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoxfSwiaWF0IjoxNzY1NTEwMjg2LCJleHAiOjE3NjU1MTM4ODZ9.zElEO315sbuVUBxb89-zcWEHpa60dits10z1fzgZGbQ
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoyfSwiaWF0IjoxNzY1NTEyNDk4LCJleHAiOjE3NjU1MTYwOTh9.KVUScVeT9VHb4KZyWz7UF5CClQdfm-i59m0WQpj1j88
 
 {
   "name": "Motor",
@@ -137,16 +137,16 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoxf
 
 ### 4. Ver todas las Categorías
 GET http://localhost:3000/categories
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoxfSwiaWF0IjoxNzY1NTEwMjg2LCJleHAiOjE3NjU1MTM4ODZ9.zElEO315sbuVUBxb89-zcWEHpa60dits10z1fzgZGbQ
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoyfSwiaWF0IjoxNzY1NTEyNDk4LCJleHAiOjE3NjU1MTYwOTh9.KVUScVeT9VHb4KZyWz7UF5CClQdfm-i59m0WQpj1j88
 
 ### 5. Eliminar Categorías
 DELETE http://localhost:3000/categories/2
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoxfSwiaWF0IjoxNzY1NTEwMjg2LCJleHAiOjE3NjU1MTM4ODZ9.zElEO315sbuVUBxb89-zcWEHpa60dits10z1fzgZGbQ
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoyfSwiaWF0IjoxNzY1NTEyNDk4LCJleHAiOjE3NjU1MTYwOTh9.KVUScVeT9VHb4KZyWz7UF5CClQdfm-i59m0WQpj1j88
 
 ### 6. Actualizar Categorías
 PUT http://localhost:3000/categories/1
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoxfSwiaWF0IjoxNzY1NTEwMjg2LCJleHAiOjE3NjU1MTM4ODZ9.zElEO315sbuVUBxb89-zcWEHpa60dits10z1fzgZGbQ
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoyfSwiaWF0IjoxNzY1NTEyNDk4LCJleHAiOjE3NjU1MTYwOTh9.KVUScVeT9VHb4KZyWz7UF5CClQdfm-i59m0WQpj1j88
 
 {
   "description": "Motores, pistones, cilindros, vielas"
@@ -171,7 +171,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoxf
 ### Crear un TAG primero (si no tienes)
 POST http://localhost:3000/tags
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoxfSwiaWF0IjoxNzY1NTEwMjg2LCJleHAiOjE3NjU1MTM4ODZ9.zElEO315sbuVUBxb89-zcWEHpa60dits10z1fzgZGbQ
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoyfSwiaWF0IjoxNzY1NTEyNDk4LCJleHAiOjE3NjU1MTYwOTh9.KVUScVeT9VHb4KZyWz7UF5CClQdfm-i59m0WQpj1j88
 
 {
     "name": "Oferta"
@@ -182,7 +182,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoxf
 ### Crear un PRODUCTO (Repuesto)
 POST http://localhost:3000/products
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoxfSwiaWF0IjoxNzY1NTEwMjg2LCJleHAiOjE3NjU1MTM4ODZ9.zElEO315sbuVUBxb89-zcWEHpa60dits10z1fzgZGbQ
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoyfSwiaWF0IjoxNzY1NTEyNDk4LCJleHAiOjE3NjU1MTYwOTh9.KVUScVeT9VHb4KZyWz7UF5CClQdfm-i59m0WQpj1j88
 
 {
   "name": "Kit de Tiempo Bera SBR 2024",
@@ -199,7 +199,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoxf
 ### Actualizar un Producto 
 PUT http://localhost:3000/products/1
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoxfSwiaWF0IjoxNzY1NTEwMjg2LCJleHAiOjE3NjU1MTM4ODZ9.zElEO315sbuVUBxb89-zcWEHpa60dits10z1fzgZGbQ
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoyfSwiaWF0IjoxNzY1NTEyNDk4LCJleHAiOjE3NjU1MTYwOTh9.KVUScVeT9VHb4KZyWz7UF5CClQdfm-i59m0WQpj1j88
 
 {
   "price": 17.99,
@@ -208,11 +208,11 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoxf
 
 ### Obtener un Producto por ID
 GET http://localhost:3000/products/1
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoxfSwiaWF0IjoxNzY1NTEwMjg2LCJleHAiOjE3NjU1MTM4ODZ9.zElEO315sbuVUBxb89-zcWEHpa60dits10z1fzgZGbQ
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoyfSwiaWF0IjoxNzY1NTEyNDk4LCJleHAiOjE3NjU1MTYwOTh9.KVUScVeT9VHb4KZyWz7UF5CClQdfm-i59m0WQpj1j88
 
 ### Eliminar un Producto
 DELETE http://localhost:3000/products/1
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoxfSwiaWF0IjoxNzY1NTEwMjg2LCJleHAiOjE3NjU1MTM4ODZ9.zElEO315sbuVUBxb89-zcWEHpa60dits10z1fzgZGbQ
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoyfSwiaWF0IjoxNzY1NTEyNDk4LCJleHAiOjE3NjU1MTYwOTh9.KVUScVeT9VHb4KZyWz7UF5CClQdfm-i59m0WQpj1j88
 
 
 
@@ -273,7 +273,7 @@ GET http://localhost:3000/products?sku=KT-BERA-2024
 ### Crear Orden y Pagar (Transaccional)
 POST http://localhost:3000/orders
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoxfSwiaWF0IjoxNzY1NTEwMjg2LCJleHAiOjE3NjU1MTM4ODZ9.zElEO315sbuVUBxb89-zcWEHpa60dits10z1fzgZGbQ
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoyfSwiaWF0IjoxNzY1NTEyNDk4LCJleHAiOjE3NjU1MTYwOTh9.KVUScVeT9VHb4KZyWz7UF5CClQdfm-i59m0WQpj1j88
 
 {
   "items": [
@@ -293,12 +293,12 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoxf
 
 ### Obtener Historial de Órdenes (Paginado)
 GET http://localhost:3000/orders?page=1&limit=5
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoxfSwiaWF0IjoxNzY1NTEwMjg2LCJleHAiOjE3NjU1MTM4ODZ9.zElEO315sbuVUBxb89-zcWEHpa60dits10z1fzgZGbQ
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoyfSwiaWF0IjoxNzY1NTEyNDk4LCJleHAiOjE3NjU1MTYwOTh9.KVUScVeT9VHb4KZyWz7UF5CClQdfm-i59m0WQpj1j88
 Content-Type: application/json
 
 
 ### Obtener Detalle de una Orden (Por ID)
 # Reemplaza el '1' al final de la URL por el ID de la orden que quieras ver
 GET http://localhost:3000/orders/3
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoxfSwiaWF0IjoxNzY1NTEwMjg2LCJleHAiOjE3NjU1MTM4ODZ9.zElEO315sbuVUBxb89-zcWEHpa60dits10z1fzgZGbQ
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoyfSwiaWF0IjoxNzY1NTEyNDk4LCJleHAiOjE3NjU1MTYwOTh9.KVUScVeT9VHb4KZyWz7UF5CClQdfm-i59m0WQpj1j88
 Content-Type: application/json

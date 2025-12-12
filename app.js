@@ -118,7 +118,12 @@ var swaggerDefinition = {
   tags: [
     { name: 'Información', description: 'Endpoints públicos de información del servidor.' },
     { name: 'Autenticación', description: 'Endpoints para registro e inicio de sesión.' },
-    { name: 'Usuarios (Gestión)', description: 'CRUD para la gestión de usuarios. Requiere token JWT.' }
+    { name: 'Usuarios (Gestión)', description: 'CRUD para la gestión de usuarios. Requiere token JWT.' },
+    { name: 'Categorías', description: '(Protegido) Gestión de categorías.' },
+    { name: 'Admin - Productos', description: '(Protegido) Gestión de inventario.' },
+    { name: 'Público - Productos', description: '(Público) Buscador y catálogo para clientes.' },
+    { name: 'Tags', description: 'Gestión de etiquetas (Tags).' },
+    { name: 'Orders', description: 'Gestión de Órdenes y Proceso de Checkout (Transaccional)' }
   ]
 };
 
@@ -130,9 +135,9 @@ var swaggerOptions = {
     path.join(__dirname, 'routes', 'users.js'),
     path.join(__dirname, 'routes', 'categories.js'),
     path.join(__dirname, 'routes', 'tags.js'),
+    path.join(__dirname, 'src', 'routes', 'orders.js'),
     path.join(__dirname, 'routes', 'products.js'),
-    path.join(__dirname, 'routes', 'public.js'),
-    path.join(__dirname, 'src', 'routes', '*.js')
+    path.join(__dirname, 'routes', 'public.js')
   ]
 };
 
@@ -371,7 +376,83 @@ var swaggerOptions = {
 
 var swaggerSpec = swaggerJSDoc(swaggerOptions);
 
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+// Reorder tags and paths to ensure 'Tags' appears before 'Orders' in the UI.
+// Some versions of Swagger UI still render sections according to path order,
+// so we reorder the spec.paths to put paths that mention the 'Tags' tag first.
+try {
+  // Ensure tags array exists
+  if (Array.isArray(swaggerSpec.tags)) {
+    // Place 'Tags' immediately after the 'Categorías' tag (or 'Categorias' fallback)
+    const idxTags = swaggerSpec.tags.findIndex(t => t.name === 'Tags');
+    const idxCategories = swaggerSpec.tags.findIndex(t => typeof t.name === 'string' && (t.name === 'Categorías' || t.name === 'Categorias' || t.name.toLowerCase().includes('categor')));
+    if (idxTags !== -1) {
+      const tagObj = swaggerSpec.tags.splice(idxTags, 1)[0];
+      const targetIndex = idxCategories !== -1 ? (idxCategories + 1) : Math.max(0, swaggerSpec.tags.length - 1);
+      swaggerSpec.tags.splice(Math.min(targetIndex, swaggerSpec.tags.length), 0, tagObj);
+    }
+
+    // Ensure 'Orders' is the last tag (so 'Tags' stays after Categories)
+    const idxOrders = swaggerSpec.tags.findIndex(t => t.name === 'Orders');
+    if (idxOrders !== -1) {
+      const ordersObj = swaggerSpec.tags.splice(idxOrders, 1)[0];
+      swaggerSpec.tags.push(ordersObj);
+    }
+  }
+
+  // Reorder paths: collect paths that include operations tagged with 'Tags' first
+  const paths = swaggerSpec.paths || {};
+  const pathKeys = Object.keys(paths);
+  const newPaths = {};
+
+  // helper to check if a path has operations with a given tag
+  function pathHasTag(pathObj, tagName) {
+    return Object.values(pathObj).some(op => Array.isArray(op.tags) && op.tags.includes(tagName));
+  }
+
+  // Reorder paths: others first, then Category paths, then Tag paths, then Orders
+  pathKeys.forEach(k => {
+    if (!pathHasTag(paths[k], 'Tags') && !pathHasTag(paths[k], 'Orders') && !pathHasTag(paths[k], 'Categorías') && !pathHasTag(paths[k], 'Categorias')) {
+      newPaths[k] = paths[k];
+    }
+  });
+
+  // Category-related paths
+  pathKeys.forEach(k => {
+    if (!newPaths[k] && (pathHasTag(paths[k], 'Categorías') || pathHasTag(paths[k], 'Categorias') || pathHasTag(paths[k], 'Categories'))) {
+      newPaths[k] = paths[k];
+    }
+  });
+
+  // Then add paths that reference the 'Tags' tag
+  pathKeys.forEach(k => {
+    if (!newPaths[k] && pathHasTag(paths[k], 'Tags')) {
+      newPaths[k] = paths[k];
+    }
+  });
+
+  // Finally add paths that reference 'Orders'
+  pathKeys.forEach(k => {
+    if (!newPaths[k] && pathHasTag(paths[k], 'Orders')) {
+      newPaths[k] = paths[k];
+    }
+  });
+
+  swaggerSpec.paths = newPaths;
+} catch (err) {
+  console.error('Error reordering swaggerSpec:', err);
+}
+
+// Configure Swagger UI to NOT sort tags/operations automatically so the
+// order in `swaggerDefinition.tags` is preserved in the UI.
+// Use `null` for the sorters to disable any automatic ordering.
+var swaggerUiOptions = {
+  swaggerOptions: {
+    tagsSorter: null,
+    operationsSorter: null
+  }
+};
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, swaggerUiOptions));
 
 /**
 * @openapi

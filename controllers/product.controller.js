@@ -10,6 +10,27 @@ module.exports = {
       // Ej: tags: [1, 2]
       const { name, description, price, stock, sku, brand, compatibility, material, categoryId, tags } = req.body;
 
+      // Validar categoryId si se envía
+      if (categoryId) {
+        const categoryExists = await Category.findByPk(categoryId);
+        if (!categoryExists) {
+          return res.status(400).json({ status: 'fail', data: { message: 'Categoría no encontrada (categoryId inválido)' } });
+        }
+      }
+
+      // Validar tags si se envían (asegurar que todos los IDs existen)
+      if (tags && tags.length > 0) {
+        if (!Array.isArray(tags)) {
+          return res.status(400).json({ status: 'fail', data: { message: 'El campo tags debe ser un arreglo de IDs' } });
+        }
+        const foundTags = await Tag.findAll({ where: { id: tags } });
+        const foundIds = foundTags.map(t => t.id);
+        const missing = tags.filter(id => !foundIds.includes(id));
+        if (missing.length > 0) {
+          return res.status(400).json({ status: 'fail', data: { message: 'Algunos tags no existen', missing } });
+        }
+      }
+
       // 1. Creamos el producto
       const newProduct = await Product.create({
         name, description, price, stock, sku, brand, compatibility, material, categoryId
@@ -30,10 +51,13 @@ module.exports = {
 
       return res.status(201).json({ status: 'success', data: { product: productWithRelations } });
     } catch (error) {
-        if (error.name === 'SequelizeUniqueConstraintError') {
-            return res.status(400).json({ status: 'fail', data: { message: 'El nombre o SKU ya existe.' } });
-        }
-        return res.status(500).json({ status: 'error', message: error.message });
+      if (error.name === 'SequelizeUniqueConstraintError') {
+        return res.status(400).json({ status: 'fail', data: { message: 'El nombre o SKU ya existe.' } });
+      }
+      if (error.name === 'SequelizeForeignKeyConstraintError') {
+        return res.status(400).json({ status: 'fail', data: { message: 'Error de clave foránea. Asegúrate de que categoryId y tags existan.', detail: error.message } });
+      }
+      return res.status(500).json({ status: 'error', message: error.message });
     }
   },
 
