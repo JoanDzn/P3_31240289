@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "node --watch ./bin/www",
-    "build": "npm install && cd frontend && npm install && npm run build",
+    "build": "npm install && cd frontend && npm install --include=dev && npm run build",
     "dev": "concurrently \"npm start\" \"npm run frontend\"",
     "frontend": "cd frontend && npm run dev",
     "test": "set NODE_ENV=test&& jest --runInBand --detectOpenHandles"
