@@ -30,10 +30,9 @@ POST {{baseUrl}}/auth/login
 Content-Type: application/json
 
 {
-  "email": "joan@gmail.com",
-  "password": "31240289"
+  "email": "joan@ejemplo.com",
+  "password": "claveSegura123"
 }
-
 
 ###
 # ===================================================
@@ -176,7 +175,16 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoyf
 {
     "name": "Oferta"
 }
+###
 
+GET http://localhost:3000/tags
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoyfSwiaWF0IjoxNzY5MDAwOTg5LCJleHAiOjE3NjkwMDQ1ODl9.2i_51rvKxYdmuVmCU1rgFAdEQPqvThoI8CFwIGHiWGY
+
+
+###
+DELETE http://localhost:3000/tags/1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoyfSwiaWF0IjoxNzY5MDAwOTg5LCJleHAiOjE3NjkwMDQ1ODl9.2i_51rvKxYdmuVmCU1rgFAdEQPqvThoI8CFwIGHiWGY
 
 
 ### Crear un PRODUCTO (Repuesto)

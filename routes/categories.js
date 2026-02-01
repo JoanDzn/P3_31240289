@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const controller = require('../controllers/category.controller');
 // Ajusta esta ruta si tu middleware tiene otro nombre
-const verifyToken = require('../middleware/auth'); 
+const verifyToken = require('../middleware/auth');
 
 /**
  * @openapi
@@ -38,7 +38,7 @@ const verifyToken = require('../middleware/auth');
  *         description: Creado
  */
 
-router.get('/', verifyToken, controller.getAll);
+router.get('/', controller.getAll);
 router.post('/', verifyToken, controller.create);
 router.put('/:id', verifyToken, controller.update);
 router.delete('/:id', verifyToken, controller.delete);

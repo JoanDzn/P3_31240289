@@ -1,7 +1,7 @@
 const { Product, Category, Tag } = require('../models');
 
 class ProductRepository {
-  
+
   // Buscar un producto por ID con sus relaciones
   async findById(id) {
     return await Product.findByPk(id, {
@@ -10,7 +10,7 @@ class ProductRepository {
         { model: Tag, as: 'tags', attributes: ['id', 'name'], through: { attributes: [] } }
       ]
     });
-  } 
+  }
 
   // Búsqueda avanzada con paginación
   // Recibe las condiciones ya construidas por el Builder
@@ -41,7 +41,8 @@ class ProductRepository {
       order: options.order,
       limit: parseInt(limit),
       offset: parseInt(offset),
-      distinct: true // Importante para contar bien con includes
+      distinct: true, // Importante para contar bien con includes
+      subQuery: false // Ayuda a la paginación con includes complejos
     });
   }
 }

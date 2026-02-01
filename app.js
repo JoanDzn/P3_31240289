@@ -30,9 +30,12 @@ var app = express();
 
 // Sincronizar modelos con la DB
 if (process.env.NODE_ENV !== 'test') {
-  sequelize.sync({ alter: true })
+  // Deshabilitar FKs temporalmente para permitir cambios de esquema en SQLite
+  sequelize.query('PRAGMA foreign_keys = OFF')
+    .then(() => sequelize.sync({ alter: true }))
+    .then(() => sequelize.query('PRAGMA foreign_keys = ON'))
     .then(() => {
-      console.log('✅ Tablas sincronizadas (Users, Products, Categories, Tags)');
+      console.log('✅ Tablas sincronizadas (Users, Products, Categories, Tags, Orders)');
     })
     .catch((err) => {
       console.error('❌ Error de sincronización:', err);
@@ -45,6 +48,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'frontend/dist')));
 
 // --- SECCIÓN DE RUTAS ---
 app.use('/', publicRouter);
@@ -311,52 +315,6 @@ var swaggerOptions = {
  *           items:
  *             type: integer
  *           example: [1, 2]
- *     CheckoutInput:
- *       type: object
- *       required:
- *         - items
- *         - paymentMethod
- *         - paymentDetails
- *       properties:
- *         items:
- *           type: array
- *           items:
- *             type: object
- *             properties:
- *               id:
- *                 type: integer
- *               quantity:
- *                 type: integer
- *         paymentMethod:
- *           type: string
- *           example: "CreditCard"
- *         paymentDetails:
- *           type: object
- *           properties:
- *             cardNumber:
- *               type: string
- *             cvv:
- *               type: string
- *             expMonth:
- *               type: string
- *             expYear:
- *               type: string
- *             cardHolder:
- *               type: string
- *             currency:
- *               type: string
- *       example:
- *         items:
- *           - id: 1
- *             quantity: 2
- *         paymentMethod: "CreditCard"
- *         paymentDetails:
- *           cardNumber: "4111111111111111"
- *           cvv: "123"
- *           expMonth: "12"
- *           expYear: "2030"
- *           cardHolder: "APPROVED"
- *           currency: "USD"
  * tags:
  *   - name: Información
  *     description: Endpoints públicos de información del servidor.
@@ -486,7 +444,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, swaggerUiOpti
 *                         example: "2"
 */
 
-app.get('/about', function(req, res) {
+app.get('/about', function (req, res) {
   res.json({
     success: "success",
     datos: {
@@ -508,7 +466,7 @@ app.get('/about', function(req, res) {
  *        '200':
  *          description: OK
  */
-app.get('/ping', function(req, res) {
+app.get('/ping', function (req, res) {
   res.status(200).end();
 })
 
@@ -787,12 +745,21 @@ app.get('/ping', function(req, res) {
  *         description: Usuario no encontrado.
  */
 
-app.use(function(req, res, next) {
+// Si ninguna ruta de API coincidió, servimos el Frontend (SPA)
+app.get('*', (req, res, next) => {
+  // Ignorar /api o /api-docs si no coinciden (dejar pasar al 404 de JSON)
+  if (req.originalUrl.startsWith('/api') || req.originalUrl.startsWith('/api-docs')) {
+    return next();
+  }
+  res.sendFile(path.join(__dirname, 'frontend/dist/index.html'));
+});
+
+app.use(function (req, res, next) {
   next(createError(404));
 });
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};

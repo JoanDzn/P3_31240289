@@ -1,0 +1,160 @@
+.container {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 2rem;
+    color: white;
+    background-color: #1e1e1e;
+    border-radius: 12px;
+    border: 1px solid #333;
+}
+
+.title {
+    color: #ff6b00;
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+}
+
+@media (max-width: 768px) {
+    .grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.sectionTitle {
+    border-bottom: 1px solid #444;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1rem;
+    color: #ccc;
+    font-size: 1.1rem;
+}
+
+.summaryItem {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+    color: #888;
+    font-size: 0.9rem;
+}
+
+.totalRow {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #444;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: white;
+}
+
+.formGroup {
+    margin-bottom: 1rem;
+}
+
+.label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    color: #aaa;
+}
+
+.input {
+    width: 100%;
+    box-sizing: border-box;
+    /* Prevenir desbordamiento del padding */
+    padding: 0.8rem;
+    background-color: #2a2a2a;
+    border: 1px solid #444;
+    border-radius: 6px;
+    color: white;
+    font-size: 1rem;
+}
+
+.input:focus {
+    border-color: #ff6b00;
+    outline: none;
+}
+
+.row {
+    display: flex;
+    gap: 1rem;
+}
+
+.payButton {
+    width: 100%;
+    background-color: #ff6b00;
+    color: white;
+    border: none;
+    padding: 1rem;
+    border-radius: 6px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 1.5rem;
+    transition: background-color 0.2s;
+}
+
+.payButton:hover:not(:disabled) {
+    background-color: #e65100;
+}
+
+.payButton:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background-color: #444;
+}
+
+.error {
+    background-color: rgba(255, 0, 0, 0.1);
+    border: 1px solid #ff4444;
+    color: #ff4444;
+    padding: 0.8rem;
+    border-radius: 6px;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.success {
+    text-align: center;
+    padding: 3rem;
+}
+
+.successIcon {
+    color: #4caf50;
+    width: 80px;
+    height: 80px;
+    margin-bottom: 1rem;
+}
+
+.homeButton {
+    display: inline-block;
+    background-color: #ff6b00;
+    color: white;
+    padding: 0.8rem 1.5rem;
+    border-radius: 6px;
+    text-decoration: none;
+    margin-top: 1rem;
+    margin-top: 1rem;
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 1.2rem;
+        margin: 1rem;
+    }
+
+    .row {
+        gap: 0.5rem;
+    }
+
+    .input {
+        font-size: 0.9rem;
+        padding: 0.7rem;
+    }
+}

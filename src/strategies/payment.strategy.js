@@ -8,49 +8,84 @@ dotenv.config();
  */
 class CreditCardStrategy {
   async execute(amount, details) {
-    // 1. Validamos datos mínimos
-    if (!details.cardNumber || !details.cardHolder) {
-        throw new Error("Faltan datos de la tarjeta (número o titular) para procesar el pago.");
+    // 0. Validar API Key
+    if (!process.env.FAKE_PAYMENT_API_KEY) {
+      console.error("❌ FAKE_PAYMENT_API_KEY no está definida en el .env");
+      throw new Error("Configuración del servidor incompleta (Falta API Key de Pagos).");
     }
 
-    // 2. Preparamos el cuerpo de la petición (Mapeo de datos)
+    // 1. Validamos datos mínimos
+    if (!details.cardNumber || !details.cardHolder) {
+      throw new Error("Faltan datos de la tarjeta (número o titular) para procesar el pago.");
+    }
+
+    // 2. Preparamos el cuerpo de la petición
+    // Convertir montos a string para evitar problemas de precisión float
     const body = {
-      amount: amount.toString(),
+      amount: String(amount),
       currency: "USD",
-      "card-number": details.cardNumber,
+      "card-number": details.cardNumber.replace(/\s/g, ''), // Limpiar espacios
       "cvv": details.cvv,
       "expiration-month": details.expMonth,
       "expiration-year": details.expYear,
       "full-name": details.cardHolder,
-      "description": "Compra en Tienda de Repuestos Joan´s Fix", // Campo OBLIGATORIO para evitar error 400
+      "description": "Compra en Tienda de Repuestos Joan's Fix",
       "reference": `ref-${Date.now()}`
     };
 
-    console.log("--> Procesando pago con CreditCardStrategy...");
+    console.log("--> Iniciando solicitud a Pasarela de Pago...");
+    console.log("    Endpoint: https://fakepayment.onrender.com/payments");
 
-    // 3. Conexión con la API externa
-    const response = await fetch('https://fakepayment.onrender.com/payments', {
-      method: 'POST',
-      headers: { 
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${process.env.FAKE_PAYMENT_API_KEY}` 
-      },
-      body: JSON.stringify(body)
-    });
+    // Configurar Timeout de 60 segundos (Render hibernate puede tardar)
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 60000);
 
-    const data = await response.json();
+    try {
+      // 3. Conexión con la API externa
+      const response = await fetch('https://fakepayment.onrender.com/payments', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${process.env.FAKE_PAYMENT_API_KEY}`
+        },
+        body: JSON.stringify(body),
+        signal: controller.signal
+      });
 
-    // 4. Manejo de errores de la pasarela
-    if (!response.ok || !data.success) {
-      if(data.errors) console.error("Detalle Error API:", JSON.stringify(data.errors, null, 2));
-      throw new Error(data.message || 'Pago rechazado por la pasarela');
+      clearTimeout(timeoutId);
+
+      const data = await response.json();
+
+      // 4. Manejo de errores de la pasarela
+      if (!response.ok || !data.success) {
+        console.error("❌ Error API Pagos:", JSON.stringify(data, null, 2));
+
+        let errorMsg = 'Pago rechazado por la pasarela';
+        if (data.errors) {
+          // Convertir array de errores a texto
+          errorMsg = Object.entries(data.errors).map(([k, v]) => `${k}: ${v}`).join(', ');
+        } else if (data.message) {
+          errorMsg = data.message;
+        }
+        throw new Error(errorMsg);
+      }
+
+      console.log("✅ Pago Aprobado. ID:", data.data.transaction_id);
+
+      // 5. Retorno exitoso estandarizado
+      return {
+        success: true,
+        transactionId: data.data.transaction_id
+      };
+
+    } catch (error) {
+      clearTimeout(timeoutId);
+      console.error("❌ Excepción en Pasarela:", error.message);
+      if (error.name === 'AbortError') {
+        throw new Error("La pasarela de pago tardó demasiado en responder (Timeout). Intente nuevamente.");
+      }
+      throw error;
     }
-
-    // 5. Retorno exitoso estandarizado
-    return {
-      success: true,
-      transactionId: data.data.transaction_id
-    };
   }
 }
 
@@ -71,7 +106,7 @@ class PaymentContext {
    */
   async process(methodName, amount, details) {
     const strategy = this.strategies[methodName];
-    
+
     if (!strategy) {
       throw new Error(`El método de pago '${methodName}' no es válido o no está soportado.`);
     }

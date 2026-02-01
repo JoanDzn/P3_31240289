@@ -37,7 +37,11 @@ module.exports = (sequelize) => {
       type: DataTypes.STRING,
       unique: true,
     },
-    
+    imageUrl: { // URL de la imagen del producto
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+
     // --- Datos Específicos de Repuestos de Moto ---
     brand: { // Marca del fabricante del repuesto (Ej: Empire, Osaka)
       type: DataTypes.STRING,
@@ -57,12 +61,12 @@ module.exports = (sequelize) => {
       // Esto se ejecuta antes de guardar para crear el SLUG
       beforeValidate: (product) => {
         if (product.name) {
-            product.slug = slugify(product.name, { lower: true, strict: true });
+          product.slug = slugify(product.name, { lower: true, strict: true });
         }
       },
       beforeUpdate: (product) => {
         if (product.changed('name')) {
-            product.slug = slugify(product.name, { lower: true, strict: true });
+          product.slug = slugify(product.name, { lower: true, strict: true });
         }
       }
     }

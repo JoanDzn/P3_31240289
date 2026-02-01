@@ -17,7 +17,7 @@ module.exports = {
 
       if (slug !== product.slug) {
         const correctUrl = `/p/${product.id}-${product.slug}`;
-        return res.redirect(301, correctUrl); 
+        return res.redirect(301, correctUrl);
       }
 
       return res.status(200).json({ status: 'success', data: { product } });
@@ -30,7 +30,7 @@ module.exports = {
   // --- 2. Listado (Refactorizado con Builder y Repository) ---
   async listProducts(req, res) {
     try {
-      const { page = 1, limit = 10 } = req.query;
+      const { page = 1, limit = 50 } = req.query;
 
       // 1. Instanciamos el Builder y encadenamos los filtros
       const queryOptions = new ProductQueryBuilder(req.query)

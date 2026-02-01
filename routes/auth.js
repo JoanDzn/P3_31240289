@@ -90,10 +90,12 @@ router.post(
     const { email, password } = req.body;
 
     try {
+      console.log('Login attempt for:', email);
       // --- 2. Verificar si el usuario existe ---
       const user = await User.findOne({ where: { email } });
 
       if (!user) {
+        console.log('User not found');
         // Damos un mensaje genérico por seguridad
         return res.status(400).json({
           status: 'fail',
@@ -101,16 +103,19 @@ router.post(
         });
       }
 
+      console.log('User found, verifying password...');
       // --- 3. Comparar la contraseña ---
       const isMatch = await bcrypt.compare(password, user.password);
 
       if (!isMatch) {
+        console.log('Password does not match');
         return res.status(400).json({
           status: 'fail',
           data: { message: 'Credenciales inválidas' }
         });
       }
 
+      console.log('Password verified, signing token...');
       // --- 4. Crear y Firmar el JWT ---
       const payload = {
         user: {
@@ -126,20 +131,26 @@ router.post(
         (err, token) => {
           if (err) throw err;
 
+          console.log('Token generated successfully');
           // --- 5. Respuesta Exitosa (JSend) ---
           res.status(200).json({
             status: 'success',
             data: {
-              token // Devolvemos el token al cliente
+              token, // Devolvemos el token al cliente
+              user: {
+                id: user.id,
+                fullName: user.fullName,
+                email: user.email
+              }
             }
           });
         }
       );
     } catch (error) {
-      console.error(error.message);
+      console.error('LOGIN ERROR:', error);
       res.status(500).json({
         status: 'error',
-        message: 'Error interno del servidor.'
+        message: 'Error interno: ' + error.message
       });
     }
   }
