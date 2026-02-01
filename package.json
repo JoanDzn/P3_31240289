@@ -7,7 +7,7 @@
   },
   "scripts": {
     "start": "node --watch ./bin/www",
-    "build": "npm install && cd frontend && npm install --production=false && npm run build",
+    "build": "echo 'Using pre-built frontend assets'",
     "dev": "concurrently \"npm start\" \"npm run frontend\"",
     "frontend": "cd frontend && npm run dev",
     "test": "set NODE_ENV=test&& jest --runInBand --detectOpenHandles"
